@@ -1,6 +1,6 @@
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, NotFoundException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
-import { DataSource } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
 import { ClientEntity } from "./entities/client.entity";
 import { ProductEntity } from "./entities/product.entity";
@@ -11,7 +11,7 @@ export class MysqlProvider implements Database {
     protected static dataSource: DataSource;
 
     async create(client: Client): Promise<null> {
-        const clientRepository = MysqlProvider.dataSource.getRepository(ClientEntity);
+        const clientRepository = this.getClientRepository();
         const actualClient = await clientRepository.findOne({ where: { documentNumber: client.documentNumber } });
         if (actualClient) {
             throw new ConflictException("Client already exists");
@@ -20,8 +20,15 @@ export class MysqlProvider implements Database {
         return null;
     }
 
-    findByCpf(): Promise<null> {
-        throw new Error("Method not implemented.");
+    async findByDocument(document: string): Promise<Client> {
+        const clientRepository = this.getClientRepository();
+        try {
+            const client: Client = await clientRepository.findOneOrFail({ where: { documentNumber: document }, select: ["name", "address", "annualIncome", "documentNumber"] });
+            return client;
+        } catch (error) {
+            console.error(error);
+            throw new NotFoundException("Client not found");
+        }
     }
 
     update(): Promise<null> {
@@ -30,6 +37,10 @@ export class MysqlProvider implements Database {
 
     delete(): Promise<null> {
         throw new Error("Method not implemented.");
+    }
+
+    private getClientRepository(): Repository<ClientEntity> {
+        return MysqlProvider.dataSource.getRepository(ClientEntity);
     }
 
     connect = async () => {

@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { CreateClientDto } from "../dtos/create-client.dto";
+import { GetClientDto } from "../dtos/get-client.dto";
 import { ClientService } from "../services/client.service";
 
 @Controller("client")
@@ -11,9 +12,9 @@ export class ClientController {
         return this.clientService.create(createClientDto);
     }
 
-    @Get()
-    findByCpf() {
-        return this.clientService.findByCpf();
+    @Get(":document")
+    findByDocument(@Param() params: GetClientDto) {
+        return this.clientService.findByDocument(params.document);
     }
 
     @Patch()

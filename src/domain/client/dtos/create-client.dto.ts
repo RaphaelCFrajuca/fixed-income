@@ -34,7 +34,7 @@ export class IsCPFOrCNPJConstraint implements ValidatorConstraintInterface {
     }
 }
 
-function IsCPFOrCNPJ(validationOptions?: ValidationOptions) {
+export function IsCPFOrCNPJ(validationOptions?: ValidationOptions) {
     return function (object: object, propertyName: string) {
         registerDecorator({
             target: object.constructor,

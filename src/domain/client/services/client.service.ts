@@ -4,12 +4,11 @@ import { Client } from "../entities/client.entity";
 
 export class ClientService {
     constructor(@Inject(Database) private readonly database: Database) {}
-    async create(client: Client) {
-        await this.database.create(client);
-        return "Client created";
+    async create(client: Client): Promise<null> {
+        return await this.database.create(client);
     }
-    findByCpf() {
-        return "Client found";
+    async findByDocument(document: string) {
+        return await this.database.findByDocument(document);
     }
     update() {
         return "Client updated";
