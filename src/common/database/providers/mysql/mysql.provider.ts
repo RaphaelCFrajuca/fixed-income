@@ -46,8 +46,18 @@ export class MysqlProvider implements Database {
         return null;
     }
 
-    delete(): Promise<null> {
-        throw new Error("Method not implemented.");
+    async delete(document: string): Promise<null> {
+        const clientRepository = this.getClientRepository();
+        await this.findByDocument(document);
+
+        try {
+            await clientRepository.delete({ documentNumber: document });
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerErrorException("Error deleting client");
+        }
+
+        return null;
     }
 
     private getClientRepository(): Repository<ClientEntity> {

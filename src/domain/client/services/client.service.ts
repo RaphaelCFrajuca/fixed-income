@@ -13,7 +13,7 @@ export class ClientService {
     async update(document: string, client: Partial<Client>) {
         return await this.database.update(document, client);
     }
-    delete() {
-        return "Client deleted";
+    async delete(document: string) {
+        return await this.database.delete(document);
     }
 }
