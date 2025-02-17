@@ -3,8 +3,10 @@ import { Client } from "src/domain/client/entities/client.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
 import { ClientEntity } from "./entities/client.entity";
+import { ClientProductsEntity } from "./entities/client_products.entity";
 import { ProductEntity } from "./entities/product.entity";
 import { MysqlConfig } from "./interfaces/mysql.interface";
+import { GenerateProducts1739814637049 } from "./migration/generate-products.migration";
 
 export class MysqlProvider implements Database {
     constructor(private readonly mysqlConfig: MysqlConfig) {}
@@ -73,7 +75,9 @@ export class MysqlProvider implements Database {
                 username: this.mysqlConfig.username,
                 password: this.mysqlConfig.password,
                 database: this.mysqlConfig.database,
-                entities: [ClientEntity, ProductEntity],
+                entities: [ClientEntity, ProductEntity, ClientProductsEntity],
+                migrations: [GenerateProducts1739814637049],
+                migrationsRun: true,
                 synchronize: true,
                 logging: false,
             });

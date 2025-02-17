@@ -8,7 +8,7 @@ export class ProductEntity {
     @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     name: string;
 
-    @Column({ name: "type", type: "varchar", length: 2, nullable: false })
+    @Column({ name: "type", type: "varchar", length: 2, nullable: true })
     type: string;
 
     @Column({ name: "annual_income_limit", type: "decimal", nullable: false })
