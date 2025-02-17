@@ -6,7 +6,7 @@ import { ClientEntity } from "./entities/client.entity";
 import { ClientProductsEntity } from "./entities/client_products.entity";
 import { ProductEntity } from "./entities/product.entity";
 import { MysqlConfig } from "./interfaces/mysql.interface";
-import { GenerateProducts1739814637049 } from "./migration/generate-products.migration";
+import { GenerateProducts1739814637050 } from "./migration/generate-products.migration";
 
 export class MysqlProvider implements Database {
     constructor(private readonly mysqlConfig: MysqlConfig) {}
@@ -76,7 +76,7 @@ export class MysqlProvider implements Database {
                 password: this.mysqlConfig.password,
                 database: this.mysqlConfig.database,
                 entities: [ClientEntity, ProductEntity, ClientProductsEntity],
-                migrations: [GenerateProducts1739814637049],
+                migrations: [GenerateProducts1739814637050],
                 migrationsRun: true,
                 synchronize: true,
                 logging: false,
