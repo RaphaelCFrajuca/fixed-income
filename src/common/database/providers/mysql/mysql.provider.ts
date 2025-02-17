@@ -1,17 +1,55 @@
+import { ConflictException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
+import { DataSource } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
+import { ClientEntity } from "./entities/client.entity";
+import { ProductEntity } from "./entities/product.entity";
+import { MysqlConfig } from "./interfaces/mysql.interface";
 
 export class MysqlProvider implements Database {
+    constructor(private readonly mysqlConfig: MysqlConfig) {}
+    protected static dataSource: DataSource;
+
     async create(client: Client): Promise<null> {
-        throw new Error("Method not implemented.");
+        const clientRepository = MysqlProvider.dataSource.getRepository(ClientEntity);
+        const actualClient = await clientRepository.findOne({ where: { documentNumber: client.documentNumber } });
+        if (actualClient) {
+            throw new ConflictException("Client already exists");
+        }
+        await clientRepository.save(client);
+        return null;
     }
+
     findByCpf(): Promise<null> {
         throw new Error("Method not implemented.");
     }
+
     update(): Promise<null> {
         throw new Error("Method not implemented.");
     }
+
     delete(): Promise<null> {
         throw new Error("Method not implemented.");
     }
+
+    connect = async () => {
+        if (!MysqlProvider.dataSource) {
+            MysqlProvider.dataSource = new DataSource({
+                type: "mysql",
+                host: this.mysqlConfig.host,
+                port: this.mysqlConfig.port,
+                username: this.mysqlConfig.username,
+                password: this.mysqlConfig.password,
+                database: this.mysqlConfig.database,
+                entities: [ClientEntity, ProductEntity],
+                synchronize: true,
+                logging: false,
+            });
+        }
+
+        if (!MysqlProvider.dataSource.isInitialized) {
+            await MysqlProvider.dataSource.initialize();
+        }
+        return this;
+    };
 }

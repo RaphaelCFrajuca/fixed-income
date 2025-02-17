@@ -8,7 +8,7 @@ export class ClientController {
 
     @Post()
     create(@Body() createClientDto: CreateClientDto) {
-        return createClientDto;
+        return this.clientService.create(createClientDto);
     }
 
     @Get()

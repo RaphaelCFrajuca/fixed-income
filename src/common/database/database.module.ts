@@ -9,7 +9,7 @@ import { Database } from "./interfaces/database.interface";
         {
             provide: Database,
             useFactory: databaseFactory,
-            inject: ["DATABASE_PROVIDER"],
+            inject: ["DATABASE_PROVIDER", "MYSQL_CONFIG"],
         },
     ],
     exports: [Database],
