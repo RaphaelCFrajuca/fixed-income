@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import { ConflictException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
@@ -31,8 +31,18 @@ export class MysqlProvider implements Database {
         }
     }
 
-    update(): Promise<null> {
-        throw new Error("Method not implemented.");
+    async update(document: string, client: Partial<Client>): Promise<null> {
+        const clientRepository = this.getClientRepository();
+
+        await this.findByDocument(document);
+
+        try {
+            await clientRepository.update({ documentNumber: document }, client);
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerErrorException("Error updating client");
+        }
+        return null;
     }
 
     delete(): Promise<null> {

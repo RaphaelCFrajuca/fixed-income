@@ -10,8 +10,8 @@ export class ClientService {
     async findByDocument(document: string) {
         return await this.database.findByDocument(document);
     }
-    update() {
-        return "Client updated";
+    async update(document: string, client: Partial<Client>) {
+        return await this.database.update(document, client);
     }
     delete() {
         return "Client deleted";
