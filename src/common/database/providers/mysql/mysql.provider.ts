@@ -1,5 +1,6 @@
 import { ConflictException, InternalServerErrorException, NotAcceptableException, NotFoundException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
+import { Product } from "src/domain/product/entities/product.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
 import { ClientEntity } from "./entities/client.entity";
@@ -64,6 +65,44 @@ export class MysqlProvider implements Database {
 
     private getClientRepository(): Repository<ClientEntity> {
         return MysqlProvider.dataSource.getRepository(ClientEntity);
+    }
+
+    private getClientProductsRepository(): Repository<ClientProductsEntity> {
+        return MysqlProvider.dataSource.getRepository(ClientProductsEntity);
+    }
+
+    private getProductRepository(): Repository<ProductEntity> {
+        return MysqlProvider.dataSource.getRepository(ProductEntity);
+    }
+
+    async contract(document: string, product: Product): Promise<null> {
+        const clientRepository = this.getClientRepository();
+        const clientProductsRepository = this.getClientProductsRepository();
+        const productRepository = this.getProductRepository();
+
+        const clientProduct = new ClientProductsEntity();
+
+        const [client, productFind] = await Promise.all([
+            clientRepository.findOne({ where: { documentNumber: document } }),
+            productRepository.findOne({ where: { name: product.name } }),
+        ]);
+
+        if (!client) throw new NotFoundException("Client not found");
+        if (!productFind) throw new NotFoundException("Product not found");
+
+        clientProduct.product = productFind;
+        clientProduct.client = client;
+        clientProduct.applicatedValue = product.applicatedValue;
+        clientProduct.returnTax = product.returnTax;
+        clientProduct.expirationDate = product.expirationDate;
+
+        try {
+            await clientProductsRepository.save(clientProduct);
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerErrorException("Error contracting product");
+        }
+        return null;
     }
 
     connect = async () => {

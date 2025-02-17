@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ClientEntity } from "./client.entity";
 import { ProductEntity } from "./product.entity";
 
@@ -9,11 +9,13 @@ export class ClientProductsEntity {
 
     @Column({ name: "client_id", type: "int", nullable: false })
     @ManyToOne(() => ClientEntity, client => client.id)
-    clientId: number;
+    @JoinColumn({ name: "client_id" })
+    client: ClientEntity;
 
     @Column({ name: "product_id", type: "int", nullable: false })
     @ManyToOne(() => ProductEntity, product => product.id)
-    productId: number;
+    @JoinColumn({ name: "product_id" })
+    product: ProductEntity;
 
     @Column({ name: "applicated_value", type: "decimal", precision: 10, scale: 2, nullable: false })
     applicatedValue: number;
