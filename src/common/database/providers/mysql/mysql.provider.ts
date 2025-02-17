@@ -1,4 +1,4 @@
-import { ConflictException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { ConflictException, InternalServerErrorException, NotAcceptableException, NotFoundException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
@@ -35,6 +35,7 @@ export class MysqlProvider implements Database {
         const clientRepository = this.getClientRepository();
 
         await this.findByDocument(document);
+        if (client?.documentNumber) throw new NotAcceptableException("Document number cannot be updated");
 
         try {
             await clientRepository.update({ documentNumber: document }, client);
