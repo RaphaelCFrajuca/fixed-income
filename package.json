@@ -90,6 +90,7 @@
       "!src/common/database/database.module.ts",
       "!src/common/database/interfaces/database.interface.ts",
       "!src/common/database/providers/mysql/*.ts",
+      "!src/common/database/providers/mysql/migration/*.ts",
       "!dist/**",
       "!test/**/*.ts",
       "!node_modules/**"
