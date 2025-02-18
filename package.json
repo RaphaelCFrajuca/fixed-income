@@ -67,15 +67,32 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "./test",
     "testRegex": ".*\\.spec\\.ts$",
+    "modulePaths": [
+      "../"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "coverageReporters": [
+      "text-summary",
+      "lcov"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "collectCoverageFrom": [
+      "**/*.ts",
+      "!src/main.ts",
+      "!src/fixed-income.module.ts",
+      "!src/common/environment/*.ts",
+      "!src/common/database/database.factory.ts",
+      "!src/common/database/database.module.ts",
+      "!src/common/database/interfaces/database.interface.ts",
+      "!src/common/database/providers/mysql/*.ts",
+      "!dist/**",
+      "!test/**/*.ts",
+      "!node_modules/**"
+    ]
   }
 }
