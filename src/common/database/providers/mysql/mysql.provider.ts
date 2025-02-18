@@ -130,7 +130,13 @@ export class MysqlProvider implements Database {
         });
         if (!client) throw new NotFoundException("Client not found");
 
-        const transformedProducts = client.products.map(product => ({
+        const transformedProducts = this.transformProducts(client);
+
+        return transformedProducts;
+    }
+
+    private transformProducts(client: ClientEntity) {
+        return client.products.map(product => ({
             id: product.id,
             name: product.name,
             applicatedValue: Number(product.applicatedValue),
@@ -142,8 +148,28 @@ export class MysqlProvider implements Database {
                 type: product.product.type,
             },
         }));
+    }
 
-        return transformedProducts;
+    async cancel(document: string, productId: number): Promise<null> {
+        const clientRepository = this.getClientRepository();
+        const clientProductsRepository = this.getClientProductsRepository();
+
+        const client = await clientRepository.findOne({
+            where: { documentNumber: document },
+            relations: ["products"],
+        });
+        if (!client) throw new NotFoundException("Client not found");
+
+        const product = client.products.find(product => product.id === productId);
+        if (!product) throw new NotFoundException("Product not found");
+
+        try {
+            await clientProductsRepository.delete({ id: productId });
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerErrorException("Error canceling product");
+        }
+        return null;
     }
 
     connect = async () => {

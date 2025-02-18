@@ -40,4 +40,8 @@ export class ProductService {
     async findProductsByClient(document: string) {
         return await this.database.findProductsByClient(document);
     }
+
+    async cancel(document: string, productId: number): Promise<null> {
+        return await this.database.cancel(document, productId);
+    }
 }

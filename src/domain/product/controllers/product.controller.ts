@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { CancelProductDto } from "../dtos/cancel-product.dto";
 import { ContractProductDto } from "../dtos/contract-product.dto";
 import { ProductDto } from "../dtos/product.dto";
 import { ProductService } from "../services/product.service";
@@ -18,7 +19,7 @@ export class ProductController {
     }
 
     @Delete("cancel/:document/:productId")
-    cancel(@Param("document") document: string, @Param("productId") productId: number) {
-        return "Product canceled";
+    cancel(@Param() params: CancelProductDto) {
+        return this.productService.cancel(params.document, params.productId);
     }
 }

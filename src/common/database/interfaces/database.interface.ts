@@ -11,6 +11,7 @@ export interface Database {
     contract(document: string, product: ClientProducts): Promise<null>;
     getProducts(): Promise<Product[]>;
     findProductsByClient(document: string): Promise<ClientProducts[]>;
+    cancel(document: string, productId: number): Promise<null>;
 }
 
 export const Database = Symbol("Database");
