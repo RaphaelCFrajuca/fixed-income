@@ -2,6 +2,7 @@ import { ConflictException, InternalServerErrorException, NotAcceptableException
 import { Client } from "src/domain/client/entities/client.entity";
 import { ProductDto } from "src/domain/product/dtos/product.dto";
 import { ClientProducts } from "src/domain/product/entities/client_products.entity";
+import { Product } from "src/domain/product/entities/product.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
 import { ClientEntity } from "./entities/client.entity";
@@ -90,7 +91,6 @@ export class MysqlProvider implements Database {
         if (!productFind) throw new NotFoundException("Product not found");
 
         const clientProduct = { ...product, product: productFind, client: client } as unknown as ClientProductsEntity;
-        console.log(clientProduct);
         try {
             await clientProductsRepository.save(clientProduct);
         } catch (error) {
@@ -98,6 +98,11 @@ export class MysqlProvider implements Database {
             throw new InternalServerErrorException("Error contracting product");
         }
         return null;
+    }
+
+    async getProducts(): Promise<Product[]> {
+        const productRepository = this.getProductRepository();
+        return await productRepository.find();
     }
 
     async findProductsByClient(document: string): Promise<ClientProducts[]> {
@@ -125,7 +130,20 @@ export class MysqlProvider implements Database {
         });
         if (!client) throw new NotFoundException("Client not found");
 
-        return client?.products;
+        const transformedProducts = client.products.map(product => ({
+            id: product.id,
+            name: product.name,
+            applicatedValue: Number(product.applicatedValue),
+            expirationDate: product.expirationDate,
+            returnTax: Number(product.returnTax),
+            product: {
+                name: product.product.name,
+                annualIncomeLimit: Number(product.product.annualIncomeLimit),
+                type: product.product.type,
+            },
+        }));
+
+        return transformedProducts;
     }
 
     connect = async () => {

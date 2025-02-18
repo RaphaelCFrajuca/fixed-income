@@ -8,6 +8,8 @@ export class ClientProductsEntity implements ClientProducts {
     @PrimaryGeneratedColumn()
     id: number;
 
+    name: string;
+
     @Column({ name: "client_id", type: "int", nullable: false })
     @ManyToOne(() => ClientEntity, client => client.id)
     @JoinColumn({ name: "client_id" })
