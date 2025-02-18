@@ -1,6 +1,10 @@
 export class Product {
     name: string;
-    applicatedValue: number;
-    returnTax: number;
-    expirationDate: Date;
+    type: ProductType;
+    annualIncomeLimit: number;
+}
+
+export enum ProductType {
+    PF = "PF",
+    PJ = "PJ",
 }

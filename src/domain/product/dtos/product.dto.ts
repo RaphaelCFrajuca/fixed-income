@@ -1,7 +1,7 @@
 import { IsDate, IsNotEmpty, IsPositive, IsString, Length, Min, MinDate } from "class-validator";
-import { Product } from "../entities/product.entity";
+import { ClientProducts } from "../entities/client_products.entity";
 
-export class ProductDto implements Product {
+export class ProductDto implements ClientProducts {
     @IsString()
     @Length(1, 5, { message: "O nome do produto deve ter entre 1 e 5 caracteres" })
     @IsNotEmpty({ message: "O nome do produto é obrigatório" })

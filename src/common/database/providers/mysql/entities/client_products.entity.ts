@@ -1,9 +1,10 @@
+import { ClientProducts } from "src/domain/product/entities/client_products.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ClientEntity } from "./client.entity";
 import { ProductEntity } from "./product.entity";
 
 @Entity("client_products")
-export class ClientProductsEntity {
+export class ClientProductsEntity implements ClientProducts {
     @PrimaryGeneratedColumn()
     id: number;
 

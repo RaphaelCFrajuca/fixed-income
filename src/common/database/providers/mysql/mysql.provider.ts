@@ -1,6 +1,7 @@
 import { ConflictException, InternalServerErrorException, NotAcceptableException, NotFoundException } from "@nestjs/common";
 import { Client } from "src/domain/client/entities/client.entity";
-import { Product } from "src/domain/product/entities/product.entity";
+import { ProductDto } from "src/domain/product/dtos/product.dto";
+import { ClientProducts } from "src/domain/product/entities/client_products.entity";
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../../interfaces/database.interface";
 import { ClientEntity } from "./entities/client.entity";
@@ -75,12 +76,10 @@ export class MysqlProvider implements Database {
         return MysqlProvider.dataSource.getRepository(ProductEntity);
     }
 
-    async contract(document: string, product: Product): Promise<null> {
+    async contract(document: string, product: ProductDto): Promise<null> {
         const clientRepository = this.getClientRepository();
         const clientProductsRepository = this.getClientProductsRepository();
         const productRepository = this.getProductRepository();
-
-        const clientProduct = new ClientProductsEntity();
 
         const [client, productFind] = await Promise.all([
             clientRepository.findOne({ where: { documentNumber: document } }),
@@ -90,12 +89,8 @@ export class MysqlProvider implements Database {
         if (!client) throw new NotFoundException("Client not found");
         if (!productFind) throw new NotFoundException("Product not found");
 
-        clientProduct.product = productFind;
-        clientProduct.client = client;
-        clientProduct.applicatedValue = product.applicatedValue;
-        clientProduct.returnTax = product.returnTax;
-        clientProduct.expirationDate = product.expirationDate;
-
+        const clientProduct = { ...product, product: productFind, client: client } as unknown as ClientProductsEntity;
+        console.log(clientProduct);
         try {
             await clientProductsRepository.save(clientProduct);
         } catch (error) {
@@ -103,6 +98,34 @@ export class MysqlProvider implements Database {
             throw new InternalServerErrorException("Error contracting product");
         }
         return null;
+    }
+
+    async findProductsByClient(document: string): Promise<ClientProducts[]> {
+        const clientRepository = this.getClientRepository();
+        const client = await clientRepository.findOne({
+            where: { documentNumber: document },
+            select: {
+                products: {
+                    id: true,
+                    applicatedValue: true,
+                    expirationDate: true,
+                    returnTax: true,
+                    product: {
+                        name: true,
+                        annualIncomeLimit: true,
+                        type: true,
+                    },
+                },
+            },
+            relations: {
+                products: {
+                    product: true,
+                },
+            },
+        });
+        if (!client) throw new NotFoundException("Client not found");
+
+        return client?.products;
     }
 
     connect = async () => {

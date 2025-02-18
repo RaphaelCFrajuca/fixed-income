@@ -13,8 +13,8 @@ export class ProductController {
     }
 
     @Get("list/:document")
-    list(@Param("document") document: string) {
-        return "Product listed";
+    list(@Param() params: ContractProductDto) {
+        return this.productService.findProductsByClient(params.document);
     }
 
     @Delete("cancel/:document/:productId")
