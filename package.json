@@ -67,10 +67,10 @@
       "json",
       "ts"
     ],
-    "rootDir": "./test",
+    "rootDir": "./",
     "testRegex": ".*\\.spec\\.ts$",
     "modulePaths": [
-      "../"
+      "./"
     ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
